@@ -43,10 +43,10 @@ data class Task(
 @Composable
 fun MainScreen() {
 
-    // State for current text input
+    // Stores current input text
     var taskText by remember { mutableStateOf("") }
 
-    // State list of tasks
+    // Stores list of tasks
     val taskList = remember { mutableStateListOf<Task>() }
 
     Column(
@@ -68,7 +68,7 @@ fun MainScreen() {
             onAddClick = {
                 if (taskText.isNotBlank()) {
                     taskList.add(Task(taskText))
-                    taskText = "" // Clear field
+                    taskText = "" // Clear text field
                 }
             }
         )
@@ -85,7 +85,7 @@ fun MainScreen() {
 }
 
 /* -----------------------------
-   Task Input Field
+   Input Field + Add Button
 -------------------------------- */
 @Composable
 fun TaskInputField(
@@ -122,7 +122,7 @@ fun TaskInputField(
 }
 
 /* -----------------------------
-   Task List
+   Scrollable Task List
 -------------------------------- */
 @Composable
 fun TaskList(
@@ -144,7 +144,7 @@ fun TaskList(
 }
 
 /* -----------------------------
-   Individual Task Item - adding an unimportant placeholder again
+   Individual Task Item
 -------------------------------- */
 @Composable
 fun TaskItem(
