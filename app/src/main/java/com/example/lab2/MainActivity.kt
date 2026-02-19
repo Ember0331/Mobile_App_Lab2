@@ -144,7 +144,7 @@ fun TaskList(
 }
 
 /* -----------------------------
-   Individual Task Item
+   Individual Task Item - adding an unimportant placeholder
 -------------------------------- */
 @Composable
 fun TaskItem(
