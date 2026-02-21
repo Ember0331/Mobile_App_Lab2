@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -30,23 +30,20 @@ class MainActivity : ComponentActivity() {
 }
 
 /* -----------------------------
-   Data class representing a task
+   Task Model
 -------------------------------- */
 data class Task(
     val description: String,
-    var isCompleted: Boolean = false
+    val isCompleted: Boolean = false
 )
 
 /* -----------------------------
-   Main Screen (Entry Point)
+   Main Screen
 -------------------------------- */
 @Composable
 fun MainScreen() {
 
-    // Stores current input text
     var taskText by remember { mutableStateOf("") }
-
-    // Stores list of tasks
     val taskList = remember { mutableStateListOf<Task>() }
 
     Column(
@@ -68,7 +65,7 @@ fun MainScreen() {
             onAddClick = {
                 if (taskText.isNotBlank()) {
                     taskList.add(Task(taskText))
-                    taskText = "" // Clear text field
+                    taskText = ""
                 }
             }
         )
@@ -77,15 +74,19 @@ fun MainScreen() {
 
         TaskList(
             tasks = taskList,
-            onDelete = { task ->
-                taskList.remove(task)
+            onToggle = { index ->
+                val task = taskList[index]
+                taskList[index] = task.copy(isCompleted = !task.isCompleted)
+            },
+            onDelete = { index ->
+                taskList.removeAt(index)
             }
         )
     }
 }
 
 /* -----------------------------
-   Input Field + Add Button
+   Input Field + Button
 -------------------------------- */
 @Composable
 fun TaskInputField(
@@ -122,22 +123,24 @@ fun TaskInputField(
 }
 
 /* -----------------------------
-   Scrollable Task List
+   Task List
 -------------------------------- */
 @Composable
 fun TaskList(
     tasks: List<Task>,
-    onDelete: (Task) -> Unit
+    onToggle: (Int) -> Unit,
+    onDelete: (Int) -> Unit
 ) {
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(tasks) { task ->
+        itemsIndexed(tasks) { index, task ->
             TaskItem(
                 task = task,
-                onDelete = { onDelete(task) }
+                onToggle = { onToggle(index) },
+                onDelete = { onDelete(index) }
             )
         }
     }
@@ -149,6 +152,7 @@ fun TaskList(
 @Composable
 fun TaskItem(
     task: Task,
+    onToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
 
@@ -159,9 +163,11 @@ fun TaskItem(
 
         Checkbox(
             checked = task.isCompleted,
-            onCheckedChange = {
-                task.isCompleted = it
-            }
+            onCheckedChange = { onToggle() },
+            colors = CheckboxDefaults.colors(
+                checkedColor = Color(0xFF7B1FA2),
+                checkmarkColor = Color.White
+            )
         )
 
         Spacer(modifier = Modifier.width(8.dp))
